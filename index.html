@@ -55,7 +55,6 @@
             "Notes": document.getElementById('notes').value
         };
 
-        // Paste your Apps Script Web App URL here
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwUsb7rHc6SXFj2i2Tn_DB8nGwVW8rKSSf5tsTmfDKSwoQf-kLs4n2iSroxGt-IUA3n7Q/exec'; 
 
         fetch(WEB_APP_URL, {
@@ -74,8 +73,6 @@
             }
         })
         .catch(error => {
-            // Note: CORS issues might trigger the catch block even on success with 'no-cors' mode,
-            // but returning JSON from Apps Script with proper headers avoids this.
             statusDiv.innerText = "Error saving progress. Check console.";
             statusDiv.style.color = "red";
             console.error('Error:', error);
