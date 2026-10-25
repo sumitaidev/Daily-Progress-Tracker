@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Proof of Work</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f7f6; margin: 0;}
+        .card { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        label { font-weight: 600; font-size: 14px; color: #555; }
+        input { width: 100%; padding: 12px; margin: 8px 0 20px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        button { width: 100%; background-color: #0F9D58; color: white; padding: 14px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+        button:hover { background-color: #0B8043; }
+        #status { text-align: center; margin-top: 15px; font-weight: bold; color: #555; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Daily Progress Tracker</h2>
+    <form id="trackerForm">
+        <label>System Password</label>
+        <input type="password" id="password" placeholder="Enter password to unlock" required>
+
+        <label>Tasks Assigned Today</label>
+        <input type="number" id="assigned" min="0" required>
+
+        <label>Tasks Completed</label>
+        <input type="number" id="completed" min="0" required>
+
+        <label>Total Hours Studied</label>
+        <input type="number" id="hours" step="0.5" min="0" required>
+
+        <label>Notes / Reflections (Optional)</label>
+        <input type="text" id="notes" placeholder="What did you learn today?">
+
+        <button type="submit">Submit to Dashboard</button>
+    </form>
+    <div id="status"></div>
+</div>
+
+<script>
+    document.getElementById('trackerForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const statusDiv = document.getElementById('status');
+        statusDiv.innerText = "Syncing with Google Sheets...";
+        statusDiv.style.color = "#555";
+
+        const data = {
+            "password": document.getElementById('password').value,
+            "Tasks Assigned": document.getElementById('assigned').value,
+            "Tasks Completed": document.getElementById('completed').value,
+            "Hours Studied": document.getElementById('hours').value,
+            "Notes": document.getElementById('notes').value
+        };
+
+        // Paste your Apps Script Web App URL here
+        const WEB_APP_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec'; 
+
+        fetch(WEB_APP_URL, {
+            method: 'POST',
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.result === 'success') {
+                statusDiv.innerText = "Success! Progress added to your tracker.";
+                statusDiv.style.color = "#0F9D58";
+                document.getElementById('trackerForm').reset();
+            } else {
+                statusDiv.innerText = "Error: " + result.error;
+                statusDiv.style.color = "red";
+            }
+        })
+        .catch(error => {
+            // Note: CORS issues might trigger the catch block even on success with 'no-cors' mode,
+            // but returning JSON from Apps Script with proper headers avoids this.
+            statusDiv.innerText = "Error saving progress. Check console.";
+            statusDiv.style.color = "red";
+            console.error('Error:', error);
+        });
+    });
+</script>
+
+</body>
+</html>
